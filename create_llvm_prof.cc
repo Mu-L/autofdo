@@ -61,7 +61,7 @@ ABSL_FLAG(std::string, propeller_cfg_dump_dir, "",
 ABSL_FLAG(uint32_t, propeller_chain_split_threshold, 0,
           "Maximum chain length (in number of nodes) for which propeller tries "
           "splitting and remerging at every splitting position.");
-ABSL_FLAG(bool, propeller_chain_split, false,
+ABSL_FLAG(bool, propeller_chain_split, true,
           "Whether propeller is allowed to split chains before merging with "
           "other chains.");
 ABSL_FLAG(bool, propeller_verbose_cluster_output, false,
@@ -112,6 +112,14 @@ ABSL_FLAG(bool, propeller_layout_only, false,
           "Instruct the propeller layout optimizer to place cold bbs after "
           "hot ones. Default to \"false\". Mutually exclusive with "
           "--propeller_split_only. Only valid when --format=propeller.");
+
+ABSL_FLAG(bool, propeller_output_module_name, false,
+          "Embed module names in the function cluster information. This "
+          "requires debug info - the binary has to be built with \"-g\" or "
+          "\"-g -gsplit-dwarf\", in the latter case, a dwp file whose name "
+          "equals to the original binary filename with a \".dwp\" suffix is "
+          "required to exist alongside with the original binary, an error will "
+          "be reported if such file is not found.");
 
 ABSL_FLAG(int32_t, propeller_cluster_encoding_version,
           static_cast<int32_t>(
@@ -177,6 +185,11 @@ devtools_crosstool_autofdo::PropellerOptions CreatePropellerOptionsFromFlags() {
           .SetCodeLayoutParamsInterFunctionReordering(
               absl::GetFlag(FLAGS_propeller_inter_function_ordering))
           .SetHttp(absl::GetFlag(FLAGS_http))
+          .SetOutputModuleName(
+              absl::GetFlag(FLAGS_propeller_output_module_name))
+          .SetClusterOutVersion(
+              static_cast<devtools_crosstool_autofdo::ClusterEncodingVersion>(
+                  absl::GetFlag(FLAGS_propeller_cluster_encoding_version)))
           .SetVerboseClusterOutput(
               absl::GetFlag(FLAGS_propeller_verbose_cluster_output)));
 }
