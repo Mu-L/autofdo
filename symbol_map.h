@@ -177,7 +177,8 @@ class Symbol {
   ~Symbol();
 
   static std::string Name(const char *name) {
-    return (name && strlen(name) > 0) ? name : "noname";
+    CHECK(name && strlen(name) > 0 && "Empty string should never occur in profile!");
+    return name;
   }
 
   std::string name() const { return Name(info.func_name); }
